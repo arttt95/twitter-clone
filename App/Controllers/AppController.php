@@ -11,11 +11,15 @@ use MF\Model\Container;
 
 class AppController extends Action {
 
-    public function timeline() {
+    public function validarAutenticacao() {
 
         session_start();
 
-        if($_SESSION['id'] != '' && $_SESSION['nome'] != '') {
+        if(!isset($_SESSION['id']) || $_SESSION['id'] == '' || !isset($_SESSION['nome']) || $_SESSION['nome'] == '') {
+
+            header('location: /?login=expirado');
+
+        } else {
 
             /*
             echo 'Chegamos em timeline';
@@ -25,13 +29,50 @@ class AppController extends Action {
             echo '</pre>';
             */
 
-            $this->render('timeline');
-
-        } else {
-
-            header('location: /?login=expirado');
+            return true;
 
         }
+
+    }
+
+    public function timeline() {
+
+        $this->validarAutenticacao();
+
+        // Recuperar tweets
+
+        $tweet = Container::getModel('Tweet');
+
+        $tweet->__set('id_usuario', $_SESSION['id']);
+
+        $tweets = $tweet->getAll();
+
+        /*
+        echo '<pre>';
+        print_r($tweets);
+        echo '</pre>';
+        */
+
+        $this->view->tweets = $tweets;
+
+        $this->render('timeline');
+
+    }
+
+    public function tweet() {
+
+        $this->validarAutenticacao();
+
+        $tweet = Container::getModel('Tweet');
+
+        $tweet->__set('tweet', $_POST['tweet']);
+        $tweet->__set('id_usuario', $_SESSION['id']);
+
+        $tweet->salvar();
+
+        header('location: /timeline');
+
+        
 
     }
 
