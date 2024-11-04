@@ -91,7 +91,13 @@ class AppController extends Action {
             
             $usuario = Container::getModel('Usuario');
             $usuario->__set('nome', $pesquisarPor);
+            $usuario->__set('id', $_SESSION['id']);
             $usuarios = $usuario->getAll();
+
+            /*
+            echo '<br><br>';
+            echo $_SESSION['id'];
+            */
 
             /*
             echo '<pre>';
@@ -104,6 +110,54 @@ class AppController extends Action {
         $this->view->usuarios = $usuarios;
 
         $this->render('quemSeguir');
+
+    }
+
+    public function acao() {
+
+        $this->validarAutenticacao();
+
+        // Descobrir qual é a ação
+        // Descobri o id do user que será seguido pelo user que está autenticado
+
+        /*
+        echo '<br><br><br>';
+
+        echo '<pre>';
+        print_r($_SESSION);
+        echo '</pre>';
+
+        echo '<pre>';
+        print_r($_GET);
+        echo '</pre>';
+        */
+
+        $acao = isset($_GET['acao']) ? $_GET['acao'] : '';
+        $id_usuario_seguindo = isset($_GET['id_usuario']) ? $_GET['id_usuario'] : '';
+
+        $usuario_seguidor = Container::getModel('UsuariosSeguidores');
+
+        $usuario_seguidor->__set('id_usuario', $_SESSION['id']);
+
+        if($acao == 'seguir') {
+
+            $usuario_seguidor->seguir($id_usuario_seguindo);
+
+        } else if ($acao == 'deixar_de_seguir') {
+
+            $usuario_seguidor->deixarDeSeguir($id_usuario_seguindo);
+
+        }
+
+        header('location: /quem_seguir');
+
+        /*
+        Array
+        (
+            [acao] => seguir
+            [id_usuario] => 1
+        )
+        */
 
     }
 

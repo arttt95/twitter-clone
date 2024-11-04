@@ -111,15 +111,25 @@ class Usuario extends Model {
 
         $query = "
             SELECT
-                id, nome, email
+                u.id, u.nome, u.email, (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        usuarios_seguidores as us
+                    WHERE
+                        us.id_usuario = :id_usuario
+                        AND us.id_usuario_seguindo = u.id
+                ) as seguindo_sn
             FROM
-                usuarios
+                usuarios AS u
             WHERE
                 nome like :nome
+                AND id != :id_usuario
         ";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':nome', '%' . $this->__get('nome') . '%');
+        $stmt->bindValue(':id_usuario', $this->__get('id'));
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
