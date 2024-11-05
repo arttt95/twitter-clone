@@ -135,6 +135,85 @@ class Usuario extends Model {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    // Informações do usuário
+    public function getInfoUsuario() {
+
+        $query = "
+            SELECT
+                nome
+            FROM
+                usuarios
+            WHERE
+                id = :id_usuario
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id_usuario', $this->__get('id'));
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    // Total de tweets
+    public function getTotalTweetsUsuario() {
+
+        $query = "
+            SELECT
+                COUNT(*) AS total_tweets
+            FROM
+                tweets
+            WHERE
+                id_usuario = :id_usuario
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id_usuario', $this->__get('id'));
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    }
+
+    // Total de pessoas que segue
+    public function getTotalSeguindo() {
+
+        $query = "
+            SELECT
+                COUNT(*) AS total_seguindo
+            FROM
+                usuarios_seguidores
+            WHERE
+                id_usuario = :id_usuario
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id_usuario', $this->__get('id'));
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    }
+
+    // Total de seguidores que tem
+    public function getTotalSeguidores() {
+
+        $query = "
+            SELECT
+                COUNT(*) AS total_seguidores
+            FROM
+                usuarios_seguidores
+            WHERE
+                id_usuario_seguindo = :id_usuario                
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id_usuario', $this->__get('id'));
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    }
+
 }
 
 ?>

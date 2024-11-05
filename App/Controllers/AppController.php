@@ -19,6 +19,8 @@ class AppController extends Action {
 
             header('location: /?login=expirado');
 
+            exit;
+
         } else {
 
             /*
@@ -55,6 +57,15 @@ class AppController extends Action {
 
         $this->view->tweets = $tweets;
 
+        $usuario = Container::getModel('Usuario');
+
+        $usuario->__set('id', $_SESSION['id']);
+
+        $this->view->info_usuario = $usuario->getInfoUsuario();
+        $this->view->total_tweets = $usuario->getTotalTweetsUsuario();
+        $this->view->total_seguindo = $usuario->getTotalSeguindo();
+        $this->view->total_seguidores = $usuario->getTotalSeguidores();
+        
         $this->render('timeline');
 
     }
@@ -82,6 +93,12 @@ class AppController extends Action {
 
         //echo '<br><br><br><br>';
 
+        ///////////////////////////
+        //  Criando um arr para  //
+        //  encapsular a lista   //
+        //   de usuários (db)    //
+        ///////////////////////////
+
         $pesquisarPor = isset($_GET['pesquisarPor']) ? $_GET['pesquisarPor'] : '';
         //echo 'Pesquisando por: ' . $pesquisarPor;
 
@@ -108,6 +125,23 @@ class AppController extends Action {
         }
 
         $this->view->usuarios = $usuarios;
+
+        ////////////////////////////
+        //  Comunicando com o db  //
+        //   para obter infos     //
+        //   tweets, seguidores,  //
+        //       e seguindo       //
+        ////////////////////////////
+
+        
+        $usuario = Container::getModel('Usuario');
+
+        $usuario->__set('id', $_SESSION['id']);
+
+        $this->view->info_usuario = $usuario->getInfoUsuario();
+        $this->view->total_tweets = $usuario->getTotalTweetsUsuario();
+        $this->view->total_seguindo = $usuario->getTotalSeguindo();
+        $this->view->total_seguidores = $usuario->getTotalSeguidores();
 
         $this->render('quemSeguir');
 
